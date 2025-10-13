@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Dinner Tab Calculator</title>
+    <link rel="stylesheet" href="https://public.codepenassets.com/css/normalize-5.0.0.min.css">
+<link rel="stylesheet" href="./style.css">
+
+  </head>
+    
+  <body>
+  <div id="app">
+  <!-- People section -->
+  <div id="people-section" class="section">
+    <!-- Person creation form   -->
+    <person-form v-on:add-person="addPerson"></person-form>
+    <!-- List of people -->   
+    <transition-group name="people-list" tag="ul" class="people-list">
+      <person-card class="person-card"
+                   v-for="person in people"
+                   v-bind:key="person.id"
+                   v-bind:class="{selected: selectedPerson.id === person.id}"
+
+                   v-bind:person="person"
+                   v-bind:fee="individualFee"
+                   v-on:select-person="selectPerson"
+                   v-on:remove-person="removePerson"></person-card>
+    </transition-group>
+    
+    <!-- Final value to pay (including guests' total) -->
+    <div class="grand-total">
+      Total: <span class="amount">{{total | formatCurrency}}</span>
+    </div>
+  </div>
+  
+  <!-- Items section -->
+  <div id="items-section" class="section" v-show="selectedPerson.name">
+    <!-- Items section heading -->
+    <div class="title">{{selectedPerson.name}}'s Tab</div>
+    <!-- List of items for this particular person -->
+    <div class="items-rows">
+      <div class="item-row"
+           v-for="item in selectedPerson.items">
+        <input type="text" class="name field"
+               v-model.lazy="item.name">
+        <input type="number" class="value field"
+               v-model.lazy.number="item.value">
+        <button class="button -warning"
+                v-on:click="selectedPerson.removeItem(item.id)">&cross;</button>
+      </div>
+      
+      <!-- Form to add a new item to the person's tab -->
+      <new-item-form v-on:add-item="addItem"></new-item-form>
+      
+      <!-- Person's total (without fee) for all the items -->
+      <div class="subtotal" v-if="selectedPerson.total">
+        Sub-Total: <span class="amount">{{selectedPerson.total()}}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Templates for components -->
+
+<template id="person-form-template">
+  <form id="person-form">
+    <label class="label" for="person-form-name">Name:</label>
+    <input type="text" placeholder="John Doe" 
+           class="name" name="person-form-name"
+           v-model="name"/>
+    <button class="button -primary"
+            v-on:click.prevent="createPerson()">&check;</button>
+  </form>
+</template>
+
+<template id="new-item-form-template">
+  <form id="new-item-form" class="item-row">
+    <input type="text" class="field name"
+           placeholder="Item Name"
+           v-model.lazy="name"/>
+    <input type="number" min="0" class="field value"
+           placeholder="Item Value"
+           v-model.lazy.number="value"/>
+    <button class="button -primary"
+            v-on:click.prevent="createItem()">&check;</button>
+  </form>  
+</template>
+
+<template id="person-card-template">
+  <li class="person-card"
+      v-on:click="selectPerson(person)">
+    <!-- Name and link to show person's items on the items section -->
+    <div class="person-header">
+      <input type="text" class="name" v-model.lazy="person.name">
+      <button class="button -warning" v-on:click.stop="removePerson()">&cross;</button>
+    </div>
+    <!-- Person's details (summary) -->
+    <div class="person-details">
+      <div class="details-row">
+        <div class="name">Guest?</div>
+        <div class="value">
+          <input type="checkbox" v-model="person.isGuest">
+        </div>
+      </div>
+      <div class="details-row">
+        <div class="name">Sub-Total:</div>
+        <div class="value">{{person.total() | formatCurrency}}</div>
+      </div>
+      <div class="details-row" v-show="!person.isGuest">
+        <div class="name">Fee: </div>
+        <div class="value">{{fee | formatCurrency}}</div>
+      </div>
+      <div class="details-row" v-show="!person.isGuest">
+        <div class="name">Total: </div>
+        <div class="value">{{person.total() + fee | formatCurrency}}</div>
+      </div>
+    </div>
+  </li>
+</template>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.8/vue.min.js'></script><script  src="./script.js"></script>
+
+  </body>
+  
+</html>

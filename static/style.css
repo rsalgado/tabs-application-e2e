@@ -1,0 +1,183 @@
+@import url("https://fonts.googleapis.com/css?family=Kalam:400,700");
+@import url("https://fonts.googleapis.com/css?family=Roboto+Mono");
+* {
+  box-sizing: border-box;
+  font-family: "Kalam";
+}
+
+.section {
+  min-width: 18rem;
+  margin: 1rem;
+}
+
+#app {
+  display: flex;
+}
+
+#people-section {
+  flex-basis: 65%;
+}
+
+#person-form {
+  display: flex;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+#person-form > .label {
+  font-weight: bold;
+  line-height: 2rem;
+  margin-right: 0.25rem;
+}
+#person-form > .name {
+  display: block;
+  align-self: stretch;
+  width: 0;
+  padding-left: 0.25rem;
+  max-width: 28rem;
+  flex: 1;
+  font-family: "Kalam", sans-serif;
+}
+
+.people-list {
+  list-style-type: none;
+  padding-left: 0;
+  display: flex;
+  flex-wrap: wrap;
+  /* Vue transitions */
+}
+.people-list-leave-active {
+  transition: all 0.25s;
+}
+.people-list-enter, .people-list-leave-to {
+  opacity: 0;
+}
+
+.person-card {
+  box-shadow: 0px 0px 4px 1px #bbb;
+  margin: 1rem 1rem;
+  width: 15rem;
+  display: inline-block;
+}
+.person-card.selected {
+  background: #eaeaea;
+}
+
+.person-header {
+  display: flex;
+  flex-direction: row;
+}
+.person-header > .name {
+  background: none;
+  border: none;
+  font-weight: bold;
+  font-size: 110%;
+  font-family: "Kalam", sans-serif;
+  padding: 0.5rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.person-details {
+  padding: 0.5rem 1rem 1rem 1rem;
+  border-top: 2px solid red;
+}
+
+.details-row {
+  display: flex;
+  margin: 0.5rem 0;
+}
+.details-row > .name {
+  font-weight: bold;
+  margin: 0;
+  width: 40%;
+}
+.details-row > .value {
+  font-family: "Roboto Mono", monospace;
+  text-align: right;
+  border-bottom: 1px dashed #ccc;
+  width: 60%;
+}
+
+.grand-total {
+  font-weight: bold;
+  text-align: center;
+  font-size: 1.75rem;
+}
+.grand-total > .amount {
+  display: inline-box;
+  margin-left: 1rem;
+  font-family: "Roboto Mono", monospace;
+}
+
+#items-section {
+  box-shadow: 0px 0px 4px 1px #bbb;
+  align-self: flex-start;
+  flex-basis: 35%;
+  max-width: 32rem;
+  padding: 1rem;
+  position: sticky;
+  margin-top: 1rem;
+  top: 1rem;
+}
+#items-section > .title {
+  font-weight: bold;
+  font-size: 1.2rem;
+  padding: 0.5rem 0;
+}
+#items-section > .total {
+  font-weight: bold;
+  text-align: right;
+}
+
+.items-rows > .subtotal {
+  font-weight: bold;
+  text-align: right;
+  margin-top: 1.5rem;
+}
+.items-rows .amount {
+  display: inline-box;
+  margin-left: 1rem;
+  font-family: "Roboto Mono", monospace;
+}
+
+.item-row {
+  margin: 0.5rem 0;
+  display: flex;
+}
+.item-row > .field {
+  border: 2px solid #cecece;
+  border-top: none;
+  border-left: none;
+  padding: 0.25rem;
+  width: 50%;
+  min-width: 0;
+}
+.item-row > .name {
+  font-family: "Kalam", sans-serif;
+}
+.item-row > .value {
+  font-family: "Roboto Mono", monospace;
+}
+.item-row > .button {
+  width: 2rem;
+  text-align: center;
+}
+
+.button {
+  border: none;
+  height: 2rem;
+  opacity: 0.7;
+  font-weight: bold;
+  padding: 0 0.5rem;
+}
+.button:hover {
+  opacity: 1;
+}
+.button.-warning {
+  background: #f00;
+  color: white;
+}
+.button.-primary {
+  background: #0066ee;
+  color: white;
+}
