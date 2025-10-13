@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { APP_FILE_PATH } from './constants';
+import { TabsPage } from './pages/TabsPage';
 
 test('has title', async ({ page }) => {
   await page.goto('https://playwright.dev/');
@@ -20,4 +21,7 @@ test('get started link', async ({ page }) => {
 
 test('opening the Dinner Tabs Application', async ({page}) => {
   await page.goto(`file://${APP_FILE_PATH}`);
+  const tabsPage = new TabsPage(page);
+  await tabsPage.selectPerson("Jesus");
+  await tabsPage.addPerson("Joe");
 });
