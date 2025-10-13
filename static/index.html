@@ -21,6 +21,7 @@
                    v-for="person in people"
                    v-bind:key="person.id"
                    v-bind:class="{selected: selectedPerson.id === person.id}"
+                   v-bind:data-testid="person.id"
 
                    v-bind:person="person"
                    v-bind:fee="individualFee"
@@ -41,7 +42,8 @@
     <!-- List of items for this particular person -->
     <div class="items-rows">
       <div class="item-row"
-           v-for="item in selectedPerson.items">
+           v-for="item in selectedPerson.items"
+           v-bind:data-testid="item.id">
         <input type="text" class="name field"
                v-model.lazy="item.name">
         <input type="number" class="value field"
