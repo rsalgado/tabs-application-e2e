@@ -1,4 +1,5 @@
 import { Locator, Page } from "@playwright/test";
+import { CardFragment } from "./CardFragment";
 
 export class TabsPage {
   readonly peopleSection: Locator;
@@ -16,13 +17,23 @@ export class TabsPage {
   }
 
   async selectPerson(name: string) {
-    const cards = await this.personCards.all();
-    const cardNames = await Promise.all(
-      cards.map(async (card) => await card.locator('.person-header .name').inputValue())
-    );
+    const personCard = await this.findCard(name);
+    await personCard.select();
+  }
 
-    const cardIndex = cardNames.indexOf(name);
-    await cards[cardIndex].click();
+  async findCard(name: string): Promise<CardFragment> {
+    let cardLocator: Locator | null = null;
+
+    for (let card of await this.personCards.all()) {
+      let title = await card.locator('.person-header .name').inputValue();
+      if (title === name) {
+        cardLocator = card;
+        break;
+      }
+    }
+
+    if (cardLocator === null) throw new Error(`No card found for the name "${name}"`);
+    return new CardFragment(this.page, cardLocator);
   }
 
   async addPerson(name: string) {
@@ -31,6 +42,6 @@ export class TabsPage {
   }
 
   async removePerson(name: string) {
-    // TODO: Implement this!
+    
   }
 }
