@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import path from 'path';
+import { APP_FILE_PATH } from './constants';
 
 test('has title', async ({ page }) => {
   await page.goto('https://playwright.dev/');
@@ -19,6 +19,5 @@ test('get started link', async ({ page }) => {
 });
 
 test('opening the Dinner Tabs Application', async ({page}) => {
-  const appFilePath = path.join(__dirname, '..', 'static', 'index.html');
-  await page.goto(`file://${appFilePath}`);
+  await page.goto(`file://${APP_FILE_PATH}`);
 });
