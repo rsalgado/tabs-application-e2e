@@ -21,6 +21,23 @@ export class TabsPage {
     await personCard.select();
   }
 
+  async addPerson(name: string) {
+    await this.newPersonForm.getByRole('textbox').fill(name);
+    await this.newPersonForm.getByRole('button').click();
+    await this.findCard(name);
+  }
+
+  async removePerson(name: string) {
+    const personCard = await this.findCard(name);
+    await personCard.close();
+    
+  }
+
+  async updatePersonName(oldName: string, newName: string) {
+    const personCard = await this.findCard(oldName);
+    await personCard.setName(newName);
+  }
+
   async findCard(name: string): Promise<CardFragment> {
     let cardLocator: Locator | null = null;
 
@@ -33,15 +50,8 @@ export class TabsPage {
     }
 
     if (cardLocator === null) throw new Error(`No card found for the name "${name}"`);
+
+    await cardLocator.waitFor({state: 'visible'});
     return new CardFragment(this.page, cardLocator);
-  }
-
-  async addPerson(name: string) {
-    await this.newPersonForm.getByRole('textbox').fill(name);
-    await this.newPersonForm.getByRole('button').click();
-  }
-
-  async removePerson(name: string) {
-    
   }
 }

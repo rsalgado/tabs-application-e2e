@@ -24,4 +24,8 @@ test('opening the Dinner Tabs Application', async ({page}) => {
   const tabsPage = new TabsPage(page);
   await tabsPage.selectPerson("Jesus");
   await tabsPage.addPerson("Joe");
+  await expect(tabsPage.personCards).toHaveCount(6);
+  await tabsPage.removePerson('Mary');
+  await expect(tabsPage.personCards).toHaveCount(5);
+  await tabsPage.updatePersonName('David', 'Dave');
 });

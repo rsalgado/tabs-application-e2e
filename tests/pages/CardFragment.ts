@@ -42,8 +42,18 @@ export class CardFragment {
     return this.guestCheckbox.isChecked();
   }
 
+  async setName(name: string) {
+    await this.nameInput.clear();
+    await this.nameInput.fill(name);
+    await this.nameInput.press('Enter');
+  }
+
   async toggleGuestCheckbox(value: boolean) {
     if (value)  await this.guestCheckbox.check();
     else        await this.guestCheckbox.uncheck();
+  }
+
+  async close() {
+    await this.closeButton.click();
   }
 }
