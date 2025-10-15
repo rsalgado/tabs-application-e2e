@@ -30,11 +30,20 @@ export class TabsPage {
   async removePerson(name: string) {
     const personCard = await this.findCard(name);
     await personCard.close();
-    
+  }
+
+  async removePersonByIndex(cardIndex: number) {
+    const personCard = await this.findCardByIndex(cardIndex);
+    await personCard.close();
   }
 
   async updatePersonName(oldName: string, newName: string) {
     const personCard = await this.findCard(oldName);
+    await personCard.setName(newName);
+  }
+
+  async updatePersonNameByIndex(cardIndex: number, newName: string) {
+    const personCard = await this.findCardByIndex(cardIndex);
     await personCard.setName(newName);
   }
 
@@ -51,6 +60,12 @@ export class TabsPage {
 
     if (cardLocator === null) throw new Error(`No card found for the name "${name}"`);
 
+    await cardLocator.waitFor({state: 'visible'});
+    return new CardFragment(this.page, cardLocator);
+  }
+
+  async findCardByIndex(cardIndex: number): Promise<CardFragment> {
+    let cardLocator = this.personCards.nth(cardIndex);
     await cardLocator.waitFor({state: 'visible'});
     return new CardFragment(this.page, cardLocator);
   }

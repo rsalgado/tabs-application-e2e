@@ -38,6 +38,13 @@ export class ItemsSectionFragment {
     return { name, value };
   }
 
+  async getItemByIndex(rowIndex: number): Promise<{name: string, value: string}> {
+    const itemRow = this.itemsRows.nth(rowIndex);
+    const name = await itemRow.locator('.name').inputValue();
+    const value = await itemRow.locator('.value').inputValue();
+    return { name, value };
+  }
+
   async removeItemById(rowId: string) {
     const itemRow = this.itemsRows.getByTestId(rowId);
     await itemRow.getByRole('button').click();
