@@ -69,4 +69,11 @@ export class TabsPage {
     await cardLocator.waitFor({state: 'visible'});
     return new CardFragment(this.page, cardLocator);
   }
+
+  async findCardById(personId: string): Promise<CardFragment|null> {
+    let cardLocator = this.peopleSection.getByTestId(personId);
+    let elementsCount = await cardLocator.count();
+    if (elementsCount === 0)  return null;
+    return new CardFragment(this.page, cardLocator);
+  }
 }

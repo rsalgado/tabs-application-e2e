@@ -56,4 +56,8 @@ export class CardFragment {
   async close() {
     await this.closeButton.click();
   }
+
+  async getPersonId() {
+    return await this.card.getAttribute('data-testid') as string;
+  }
 }

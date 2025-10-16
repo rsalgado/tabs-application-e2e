@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { APP_FILE_PATH } from "./constants";
 import { TabsPage } from "./pages/TabsPage";
 import { ItemsSectionFragment } from "./pages/ItemsSectionFragment";
+import { CardFragment } from "./pages/CardFragment";
 
 test.beforeEach(async ({page}) => {
   await page.goto(`file://${APP_FILE_PATH}`);
@@ -49,12 +50,14 @@ test.describe("Cards functionality", () => {
 
   test("A person can be removed", async ({page}) => {
     const tabsPage = new TabsPage(page);
-    const card = await tabsPage.findCardByIndex(2);
-    const personName = await card.nameInput.inputValue();
+    let card: CardFragment | null = await tabsPage.findCardByIndex(2);
+    const personId = await card.getPersonId();
 
     await expect(tabsPage.personCards).toHaveCount(5);
     await card.close();
     await expect(tabsPage.personCards).toHaveCount(4);
+    card = await tabsPage.findCardById(personId);
+    expect(card).toBeNull();
   });
 
   test("A person name can be updated", async ({page}) => {
