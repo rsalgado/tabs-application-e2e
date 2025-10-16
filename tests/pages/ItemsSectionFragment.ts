@@ -12,7 +12,7 @@ export class ItemsSectionFragment {
     this.page = page;
     this.itemsSection = itemsSection;
     this.title = itemsSection.locator('.title');
-    this.subTotal = itemsSection.locator('.subtotal');
+    this.subTotal = itemsSection.locator('.subtotal .amount');
     this.itemsRows = itemsSection.locator('.items-rows');
     this.newItemForm = itemsSection.locator('#new-item-form');
   }
@@ -66,5 +66,20 @@ export class ItemsSectionFragment {
 
   async getItemsCount(): Promise<number> {
     return await this.itemsRows.locator('.item-row[data-testid]').count();
+  }
+
+  async setItemByIndex(rowIndex: number, itemData: { name?: string; value?: string }) {
+    const itemRow = this.itemsRows.locator('.item-row').nth(rowIndex);
+    // Only fill if values are provided
+    if (itemData.name !== undefined) {
+      await itemRow.locator('.name').clear();
+      await itemRow.locator('.name').fill(itemData.name);
+      await itemRow.locator('.name').press('Enter');
+    }
+    if (itemData.value !== undefined) {
+      await itemRow.locator('.value').clear();
+      await itemRow.locator('.value').fill(itemData.value);
+      await itemRow.locator('.value').press('Enter');
+    }
   }
 }
