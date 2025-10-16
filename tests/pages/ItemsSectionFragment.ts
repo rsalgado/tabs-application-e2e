@@ -39,10 +39,24 @@ export class ItemsSectionFragment {
   }
 
   async getItemByIndex(rowIndex: number): Promise<{name: string, value: string}> {
-    const itemRow = this.itemsRows.nth(rowIndex);
+    const itemRow = this.itemsRows.locator('.item-row').nth(rowIndex);
     const name = await itemRow.locator('.name').inputValue();
     const value = await itemRow.locator('.value').inputValue();
     return { name, value };
+  }
+
+  async getItems() {
+    let itemsData: {id: string, name: string, value: string}[] = [];
+
+    for (let itemLocator of await this.itemsRows.locator('.item-row[data-testid]').all()) {
+      const id = await itemLocator.getAttribute('data-testid') as string;
+      const name = await itemLocator.locator('.name').inputValue();
+      const value = await itemLocator.locator('.value').inputValue();
+
+      itemsData.push({id, name, value});
+    }
+
+    return itemsData;
   }
 
   async removeItemById(rowId: string) {
