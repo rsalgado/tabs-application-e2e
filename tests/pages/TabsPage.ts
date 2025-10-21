@@ -17,18 +17,18 @@ export class TabsPage {
   }
 
   async selectPerson(name: string) {
-    const personCard = await this.findCard(name);
+    const personCard = await this.findCardByName(name);
     await personCard.select();
   }
 
   async addPerson(name: string) {
     await this.newPersonForm.getByRole('textbox').fill(name);
     await this.newPersonForm.getByRole('button').click();
-    await this.findCard(name);
+    await this.findCardByName(name);
   }
 
   async removePerson(name: string) {
-    const personCard = await this.findCard(name);
+    const personCard = await this.findCardByName(name);
     await personCard.close();
   }
 
@@ -38,7 +38,7 @@ export class TabsPage {
   }
 
   async updatePersonName(oldName: string, newName: string) {
-    const personCard = await this.findCard(oldName);
+    const personCard = await this.findCardByName(oldName);
     await personCard.setName(newName);
   }
 
@@ -47,7 +47,7 @@ export class TabsPage {
     await personCard.setName(newName);
   }
 
-  async findCard(name: string): Promise<CardFragment> {
+  async findCardByName(name: string): Promise<CardFragment> {
     let cardLocator: Locator | null = null;
 
     for (let card of await this.personCards.all()) {
