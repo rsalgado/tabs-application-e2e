@@ -69,6 +69,15 @@ test.describe("Cards functionality", () => {
     await expect(card.nameInput).toHaveValue("Joshua");
     await tabsPage.selectPerson("Joshua");
   });
+
+  test("All cards can be removed and the total gets updated correctly", async ({page}) => {
+    const tabsPage = new TabsPage(page);
+    await expect(tabsPage.personCards).toHaveCount(5);
+    await tabsPage.removeAllPeople();
+    await expect(tabsPage.personCards).toHaveCount(0);
+
+    await expect(tabsPage.total).toHaveText("0.00");
+  });
 });
 
 test.describe("Items functionality", () => {

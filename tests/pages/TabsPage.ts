@@ -6,6 +6,7 @@ export class TabsPage {
   readonly itemsSection: Locator;
   readonly personCards: Locator;
   readonly newPersonForm: Locator;
+  readonly total: Locator;
   readonly page: Page;
 
   constructor(page: Page) {
@@ -14,7 +15,10 @@ export class TabsPage {
     this.itemsSection = this.page.locator('#items-section');
     this.personCards = this.peopleSection.locator('.person-card');
     this.newPersonForm = this.page.locator('#person-form');
+    this.total = this.page.locator('.grand-total .amount');
   }
+
+  // TODO: Refactor code use either person or card terminology consistently
 
   async selectPerson(name: string) {
     const personCard = await this.findCardByName(name);
@@ -75,5 +79,14 @@ export class TabsPage {
     let elementsCount = await cardLocator.count();
     if (elementsCount === 0)  return null;
     return new CardFragment(this.page, cardLocator);
+  }
+
+  async removeAllPeople() {
+    const cards = await this.personCards.all();
+
+    for (let card of cards) {
+      const cardFragment = new CardFragment(this.page, card);
+      await cardFragment.close();
+    }
   }
 }
