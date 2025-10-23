@@ -95,6 +95,55 @@ test.describe("Cards functionality", () => {
     expect(card.isDetailsRowVisible("Fee")).resolves.toBe(false);
     expect(card.isDetailsRowVisible("Total")).resolves.toBe(false);
   });
+
+  test("The costs of a guest are spread between the remaining people", async ({page}) => {
+    const tabsPage = new TabsPage(page);
+    const itemsSection = new ItemsSectionFragment(page, tabsPage.itemsSection);
+
+    await tabsPage.removeAllCards();
+
+    // Add first person (Alice)
+    await tabsPage.addPerson("Alice");
+    await tabsPage.selectPerson("Alice");
+    await itemsSection.addItem("Flavored Soda", 12_000);
+    await itemsSection.addItem("Bacon & Cheese Burger", 30_000);
+    await expect(itemsSection.subTotal).toHaveText("42000");
+    await expect(tabsPage.total).toHaveText("42,000.00");
+
+    // Add second person (Bob)
+    await tabsPage.addPerson("Bob");
+    await tabsPage.selectPerson("Bob");
+    await itemsSection.addItem("Pepsi 600ml", 8_000);
+    await itemsSection.addItem("Veggie Pizza", 32_000);
+    await expect(itemsSection.subTotal).toHaveText("40000");
+    await expect(tabsPage.total).toHaveText("82,000.00");
+
+    // Add third person (Charlie)
+    await tabsPage.addPerson("Charlie");
+    await tabsPage.selectPerson("Charlie");
+    await itemsSection.addItem("Water 500ml", 4_500);
+    await itemsSection.addItem("Chicken Wrap", 25_000);
+    await expect(itemsSection.subTotal).toHaveText("29500");
+    await expect(tabsPage.total).toHaveText("111,500.00");
+
+    // Set Alice as guest
+    const aliceCard =  await tabsPage.findCardByName("Alice");
+    await aliceCard.setGuest(true);
+
+    // Verify that Bob and Charlie absorbed Alice's costs
+
+    const bobsCard =  await tabsPage.findCardByName("Bob");
+    expect(await bobsCard.getValueFor("Sub-Total")).toEqual("40,000.00");
+    expect(await bobsCard.getValueFor("Fee")).toEqual("21,000.00");
+    expect(await bobsCard.getValueFor("Total")).toEqual("61,000.00");
+
+    const charliesCard =  await tabsPage.findCardByName("Charlie");
+    expect(await charliesCard.getValueFor("Sub-Total")).toEqual("29,500.00");
+    expect(await charliesCard.getValueFor("Fee")).toEqual("21,000.00");
+    expect(await charliesCard.getValueFor("Total")).toEqual("50,500.00");
+
+    await expect(tabsPage.total).toHaveText("111,500.00");
+  });
 });
 
 test.describe("Items functionality", () => {
