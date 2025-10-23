@@ -3,6 +3,7 @@ import { APP_FILE_PATH } from "./constants";
 import { TabsPage } from "./pages/TabsPage";
 import { ItemsSectionFragment } from "./pages/ItemsSectionFragment";
 import { CardFragment } from "./pages/CardFragment";
+import * as helpers from "./helpers/helpers";
 
 test.beforeEach(async ({page}) => {
   await page.goto(`file://${APP_FILE_PATH}`);
@@ -159,26 +160,26 @@ test.describe("Guest functionality", () => {
     await tabsPage.removeAllCards();
 
     // Add first person (Alice)
-    await tabsPage.addPerson("Alice");
-    await tabsPage.selectPerson("Alice");
-    await itemsSection.addItem("Flavored Soda", 12_000);
-    await itemsSection.addItem("Bacon & Cheese Burger", 30_000);
+    await helpers.createCardWithItems(page, "Alice", [
+      {name: "Flavored Soda", value: 12_000},
+      {name: "Bacon & Cheese Burger", value: 30_000}
+    ]);
     await expect(itemsSection.subTotal).toHaveText("42000");
     await expect(tabsPage.total).toHaveText("42,000.00");
 
     // Add second person (Bob)
-    await tabsPage.addPerson("Bob");
-    await tabsPage.selectPerson("Bob");
-    await itemsSection.addItem("Pepsi 600ml", 8_000);
-    await itemsSection.addItem("Veggie Pizza", 32_000);
+    await helpers.createCardWithItems(page, "Bob", [
+      {name: "Pepsi 600ml", value: 8_000},
+      {name: "Veggie Pizza", value: 32_000}
+    ]);
     await expect(itemsSection.subTotal).toHaveText("40000");
     await expect(tabsPage.total).toHaveText("82,000.00");
 
     // Add third person (Charlie)
-    await tabsPage.addPerson("Charlie");
-    await tabsPage.selectPerson("Charlie");
-    await itemsSection.addItem("Water 500ml", 4_500);
-    await itemsSection.addItem("Chicken Wrap", 25_000);
+    await helpers.createCardWithItems(page, "Charlie", [
+      {name: "Water 500ml", value: 4_500},
+      {name: "Chicken Wrap", value: 25_000}
+    ]);
     await expect(itemsSection.subTotal).toHaveText("29500");
     await expect(tabsPage.total).toHaveText("111,500.00");
 
