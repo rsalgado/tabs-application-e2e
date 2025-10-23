@@ -78,7 +78,63 @@ test.describe("Cards functionality", () => {
 
     await expect(tabsPage.total).toHaveText("0.00");
   });
+});
 
+test.describe("Items functionality", () => {
+  test("An item can be created", async ({page}) => {
+    const tabsPage = new TabsPage(page);
+    await tabsPage.selectPerson("Angie");
+    
+    const itemsSection = new ItemsSectionFragment(page, tabsPage.itemsSection);
+    expect(await itemsSection.getItemsCount()).toEqual(2);
+    await itemsSection.addItem("Coca-Cola 300ml", 4000);
+    expect(await itemsSection.getItemsCount()).toEqual(3);
+    
+    const itemData = await itemsSection.getItemByIndex(2);
+    expect(itemData.name).toEqual("Coca-Cola 300ml");
+    expect(itemData.value).toEqual("4000");
+  });
+
+  test("An item can be removed", async ({page}) => {
+    const tabsPage = new TabsPage(page);
+    await tabsPage.selectPerson("Angie");
+
+    const itemsSection = new ItemsSectionFragment(page, tabsPage.itemsSection);
+    expect(await itemsSection.getItemsCount()).toEqual(2);
+    await itemsSection.removeItemById("3");
+    expect(await itemsSection.getItemsCount()).toEqual(1);
+ 
+    const itemsData = await itemsSection.getItems();
+    const isItemPresent = itemsData.some(item => item.id === "3");
+    expect(isItemPresent).toEqual(false);
+  });
+
+  test("An item can updated", async({page}) => {
+    const tabsPage = new TabsPage(page);
+    await tabsPage.selectPerson("Angie");
+
+    const itemsSection = new ItemsSectionFragment(page, tabsPage.itemsSection);
+    const originalFirstRow = await itemsSection.getItemByIndex(0);
+    const originalSecondRow = await itemsSection.getItemByIndex(1);
+
+    expect(itemsSection.subTotal).toHaveText("6500");
+
+    await itemsSection.setItemByIndex(0, { name: "Muffin"});
+    await itemsSection.setItemByIndex(1, { value: "2000" });
+
+    const firstRow = await itemsSection.getItemByIndex(0);
+    expect(firstRow.name).toEqual("Muffin");
+    expect(firstRow.value).toEqual(originalFirstRow.value);
+
+    const secondRow = await itemsSection.getItemByIndex(1);
+    expect(secondRow.name).toEqual(originalSecondRow.name);
+    expect(secondRow.value).toEqual("2000");
+
+    expect(itemsSection.subTotal).toHaveText("4300");
+  });
+});
+
+test.describe("Guest functionality", () => {
   test("A person's card doesnt show the 'Fee' and 'Total' details rows when the 'Guest?' checkbox is checked", async ({page}) => {
     const tabsPage = new TabsPage(page);
     await tabsPage.removeAllCards();
@@ -143,59 +199,5 @@ test.describe("Cards functionality", () => {
     expect(await charliesCard.getValueFor("Total")).toEqual("50,500.00");
 
     await expect(tabsPage.total).toHaveText("111,500.00");
-  });
-});
-
-test.describe("Items functionality", () => {
-  test("An item can be created", async ({page}) => {
-    const tabsPage = new TabsPage(page);
-    await tabsPage.selectPerson("Angie");
-    
-    const itemsSection = new ItemsSectionFragment(page, tabsPage.itemsSection);
-    expect(await itemsSection.getItemsCount()).toEqual(2);
-    await itemsSection.addItem("Coca-Cola 300ml", 4000);
-    expect(await itemsSection.getItemsCount()).toEqual(3);
-    
-    const itemData = await itemsSection.getItemByIndex(2);
-    expect(itemData.name).toEqual("Coca-Cola 300ml");
-    expect(itemData.value).toEqual("4000");
-  });
-
-  test("An item can be removed", async ({page}) => {
-    const tabsPage = new TabsPage(page);
-    await tabsPage.selectPerson("Angie");
-
-    const itemsSection = new ItemsSectionFragment(page, tabsPage.itemsSection);
-    expect(await itemsSection.getItemsCount()).toEqual(2);
-    await itemsSection.removeItemById("3");
-    expect(await itemsSection.getItemsCount()).toEqual(1);
- 
-    const itemsData = await itemsSection.getItems();
-    const isItemPresent = itemsData.some(item => item.id === "3");
-    expect(isItemPresent).toEqual(false);
-  });
-
-  test("An item can updated", async({page}) => {
-    const tabsPage = new TabsPage(page);
-    await tabsPage.selectPerson("Angie");
-
-    const itemsSection = new ItemsSectionFragment(page, tabsPage.itemsSection);
-    const originalFirstRow = await itemsSection.getItemByIndex(0);
-    const originalSecondRow = await itemsSection.getItemByIndex(1);
-
-    expect(itemsSection.subTotal).toHaveText("6500");
-
-    await itemsSection.setItemByIndex(0, { name: "Muffin"});
-    await itemsSection.setItemByIndex(1, { value: "2000" });
-
-    const firstRow = await itemsSection.getItemByIndex(0);
-    expect(firstRow.name).toEqual("Muffin");
-    expect(firstRow.value).toEqual(originalFirstRow.value);
-
-    const secondRow = await itemsSection.getItemByIndex(1);
-    expect(secondRow.name).toEqual(originalSecondRow.name);
-    expect(secondRow.value).toEqual("2000");
-
-    expect(itemsSection.subTotal).toHaveText("4300");
   });
 });
