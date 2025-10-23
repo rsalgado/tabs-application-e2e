@@ -1,4 +1,4 @@
-import { Locator, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 import { CardFragment } from "./CardFragment";
 
 export class TabsPage {
@@ -29,6 +29,7 @@ export class TabsPage {
     await this.newPersonForm.getByRole('textbox').fill(name);
     await this.newPersonForm.getByRole('button').click();
     await this.findCardByName(name);
+    await this.page.waitForTimeout(500); // Wait for animations to complete
   }
 
   async removePerson(name: string) {
@@ -81,12 +82,15 @@ export class TabsPage {
     return new CardFragment(this.page, cardLocator);
   }
 
-  async removeAllPeople() {
+  async removeAllCards() {
     const cards = await this.personCards.all();
 
     for (let card of cards) {
       const cardFragment = new CardFragment(this.page, card);
       await cardFragment.close();
     }
+
+    await expect(this.personCards).toHaveCount(0);
+    await this.page.waitForTimeout(500); // Wait animations to complete
   }
 }

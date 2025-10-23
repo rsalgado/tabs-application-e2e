@@ -73,10 +73,27 @@ test.describe("Cards functionality", () => {
   test("All cards can be removed and the total gets updated correctly", async ({page}) => {
     const tabsPage = new TabsPage(page);
     await expect(tabsPage.personCards).toHaveCount(5);
-    await tabsPage.removeAllPeople();
+    await tabsPage.removeAllCards();
     await expect(tabsPage.personCards).toHaveCount(0);
 
     await expect(tabsPage.total).toHaveText("0.00");
+  });
+
+  test("A person's card doesnt show the 'Fee' and 'Total' details rows when the 'Guest?' checkbox is checked", async ({page}) => {
+    const tabsPage = new TabsPage(page);
+    await tabsPage.removeAllCards();
+
+    await tabsPage.addPerson("Anna");
+    const card = await tabsPage.findCardByName("Anna");
+    expect(card.isDetailsRowVisible("Sub-Total")).resolves.toBe(true);
+    expect(card.isDetailsRowVisible("Fee")).resolves.toBe(true);
+    expect(card.isDetailsRowVisible("Total")).resolves.toBe(true);
+
+    await card.setGuest(true);
+
+    expect(card.isDetailsRowVisible("Sub-Total")).resolves.toBe(true);
+    expect(card.isDetailsRowVisible("Fee")).resolves.toBe(false);
+    expect(card.isDetailsRowVisible("Total")).resolves.toBe(false);
   });
 });
 

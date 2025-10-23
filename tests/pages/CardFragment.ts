@@ -6,6 +6,7 @@ export class CardFragment {
   readonly nameInput: Locator;
   readonly closeButton: Locator;
   readonly guestCheckbox: Locator;
+  readonly detailsRows: Locator;
 
   constructor(page: Page, card: Locator) {
     this.page = page;
@@ -22,6 +23,8 @@ export class CardFragment {
       .locator('.details-row')
       .filter({hasText: 'Guest?'})
       .getByRole('checkbox');
+
+    this.detailsRows = card.locator('.details-row');
   }
 
   async select() {
@@ -30,16 +33,27 @@ export class CardFragment {
 
   async getValueFor(rowName: string): Promise<string> {
     const regExp = new RegExp(`^${rowName}\:`, 'i');
-    const value = await this.card
-              .locator('.details-row')
+    const value = await 
+            this.detailsRows
               .filter({ hasText: regExp})
               .locator('.value')
               .textContent();
     return value ?? '';
   }
 
+  async isDetailsRowVisible(rowName: string) {
+    const regExp = new RegExp(`^${rowName}\:`, 'i');
+    const row = this.detailsRows.filter({ hasText: regExp});
+    return await row.isVisible();
+  }
+
   async isGuest() {
     return this.guestCheckbox.isChecked();
+  }
+
+  async setGuest(isGuest: boolean) {
+    if (isGuest)  await this.guestCheckbox.check();
+    else          await this.guestCheckbox.uncheck();
   }
 
   async setName(name: string) {

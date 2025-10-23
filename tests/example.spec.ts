@@ -29,6 +29,6 @@ test('opening the Dinner Tabs Application', async ({page}) => {
   await expect(tabsPage.personCards).toHaveCount(5);
   await tabsPage.updatePersonName('David', 'Dave');
 
-  const angiesTab = await tabsPage.findCard('Angie')
+  const angiesTab = await tabsPage.findCardByName('Angie');
   expect(await angiesTab.getValueFor('Total')).toEqual('7,625.00');
 });
