@@ -1,7 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { APP_FILE_PATH } from "./constants";
 import { TabsPage } from "./pages/TabsPage";
-import { ItemsSectionFragment } from "./pages/ItemsSectionFragment";
 import { CardFragment } from "./pages/CardFragment";
 import * as helpers from "./helpers/helpers";
 
@@ -86,7 +85,7 @@ test.describe("Items functionality", () => {
     const tabsPage = new TabsPage(page);
     await tabsPage.selectPerson("Angie");
     
-    const itemsSection = new ItemsSectionFragment(page, tabsPage.itemsSection);
+    const itemsSection = tabsPage.itemsSectionFragment
     expect(await itemsSection.getItemsCount()).toEqual(2);
     await itemsSection.addItem("Coca-Cola 300ml", 4000);
     expect(await itemsSection.getItemsCount()).toEqual(3);
@@ -100,7 +99,7 @@ test.describe("Items functionality", () => {
     const tabsPage = new TabsPage(page);
     await tabsPage.selectPerson("Angie");
 
-    const itemsSection = new ItemsSectionFragment(page, tabsPage.itemsSection);
+    const itemsSection = tabsPage.itemsSectionFragment;
     expect(await itemsSection.getItemsCount()).toEqual(2);
     await itemsSection.removeItemById("3");
     expect(await itemsSection.getItemsCount()).toEqual(1);
@@ -114,7 +113,7 @@ test.describe("Items functionality", () => {
     const tabsPage = new TabsPage(page);
     await tabsPage.selectPerson("Angie");
 
-    const itemsSection = new ItemsSectionFragment(page, tabsPage.itemsSection);
+    const itemsSection = tabsPage.itemsSectionFragment;
     const originalFirstRow = await itemsSection.getItemByIndex(0);
     const originalSecondRow = await itemsSection.getItemByIndex(1);
 
@@ -155,12 +154,12 @@ test.describe("Guest functionality", () => {
 
   test("The costs of a guest are spread between the remaining people", async ({page}) => {
     const tabsPage = new TabsPage(page);
-    const itemsSection = new ItemsSectionFragment(page, tabsPage.itemsSection);
+    const itemsSection = tabsPage.itemsSectionFragment;
 
     await tabsPage.removeAllCards();
 
     // Add first person (Alice)
-    await helpers.createCardWithItems(page, "Alice", [
+    await helpers.createCardWithItems(tabsPage, "Alice", [
       {name: "Flavored Soda", value: 12_000},
       {name: "Bacon & Cheese Burger", value: 30_000}
     ]);
@@ -168,7 +167,7 @@ test.describe("Guest functionality", () => {
     await expect(tabsPage.total).toHaveText("42,000.00");
 
     // Add second person (Bob)
-    await helpers.createCardWithItems(page, "Bob", [
+    await helpers.createCardWithItems(tabsPage, "Bob", [
       {name: "Pepsi 600ml", value: 8_000},
       {name: "Veggie Pizza", value: 32_000}
     ]);
@@ -176,7 +175,7 @@ test.describe("Guest functionality", () => {
     await expect(tabsPage.total).toHaveText("82,000.00");
 
     // Add third person (Charlie)
-    await helpers.createCardWithItems(page, "Charlie", [
+    await helpers.createCardWithItems(tabsPage, "Charlie", [
       {name: "Water 500ml", value: 4_500},
       {name: "Chicken Wrap", value: 25_000}
     ]);

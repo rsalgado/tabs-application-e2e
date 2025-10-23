@@ -1,5 +1,6 @@
 import { expect, Locator, Page } from "@playwright/test";
 import { CardFragment } from "./CardFragment";
+import { ItemsSectionFragment } from "./ItemsSectionFragment";
 
 export class TabsPage {
   readonly peopleSection: Locator;
@@ -16,6 +17,10 @@ export class TabsPage {
     this.personCards = this.peopleSection.locator('.person-card');
     this.newPersonForm = this.page.locator('#person-form');
     this.total = this.page.locator('.grand-total .amount');
+  }
+
+  get itemsSectionFragment(): ItemsSectionFragment {
+    return new ItemsSectionFragment(this.page, this.itemsSection);
   }
 
   // TODO: Refactor code use either person or card terminology consistently
