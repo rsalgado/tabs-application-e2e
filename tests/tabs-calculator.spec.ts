@@ -200,4 +200,96 @@ test.describe("Guest functionality", () => {
 
     await expect(tabsPage.total).toHaveText("111,500.00");
   });
+
+  test("Unmarking a guest recalculates the costs correctly", async ({page}) => {
+    const tabsPage = new TabsPage(page);
+    const itemsSection = tabsPage.itemsSectionFragment;
+
+    await tabsPage.removeAllCards();
+
+    // Add first person (Diana)
+    await helpers.createCardWithItems(tabsPage, "Diana", [
+      {name: "Lemonade", value: 10_000},
+      {name: "Steak", value: 50_000}
+    ]);
+    await expect(itemsSection.subTotal).toHaveText("60000");
+    await expect(tabsPage.total).toHaveText("60,000.00");
+
+    // Add second person (Ethan)
+    await helpers.createCardWithItems(tabsPage, "Ethan", [
+      {name: "Iced Tea", value: 6_000},
+      {name: "Salmon Fillet", value: 44_000}
+    ]);
+    await expect(itemsSection.subTotal).toHaveText("50000");
+    await expect(tabsPage.total).toHaveText("110,000.00");
+
+    // Set Diana as guest
+    const dianaCard =  await tabsPage.findCardByName("Diana");
+    await dianaCard.setGuest(true);
+
+    // Verify that Ethan absorbed Diana's costs
+    const ethansCard =  await tabsPage.findCardByName("Ethan");
+    expect(await ethansCard.getValueFor("Sub-Total")).toEqual("50,000.00");
+    expect(await ethansCard.getValueFor("Fee")).toEqual("60,000.00");
+    expect(await ethansCard.getValueFor("Total")).toEqual("110,000.00");
+
+    await expect(tabsPage.total).toHaveText("110,000.00");
+
+    // Unmark Diana as guest
+    await dianaCard.setGuest(false);
+
+    // Verify that costs are back to normal
+    expect(await ethansCard.getValueFor("Sub-Total")).toEqual("50,000.00");
+    expect(await ethansCard.getValueFor("Fee")).toEqual("0.00");
+    expect(await ethansCard.getValueFor("Total")).toEqual("50,000.00");
+
+    await expect(tabsPage.total).toHaveText("110,000.00");
+  });
+
+  test("Adding another person while one is marked as guest recalculates the costs correctly", async ({page}) => {
+    const tabsPage = new TabsPage(page);
+
+    await tabsPage.removeAllCards();
+
+    // Add first person (Robert)
+    await helpers.createCardWithItems(tabsPage, "Robert", [
+      {name: "Coffee", value: 10_000},
+      {name: "Cheesecake", value: 15_000},
+    ]);
+
+    // Add second person (Anna)
+    await helpers.createCardWithItems(tabsPage, "Anna", [
+      {name: "Tea", value: 8_000},
+      {name: "Fruit Salad", value: 12_000},
+    ]);
+
+    await expect(tabsPage.total).toHaveText("45,000.00");
+
+    // Set Anna as guest
+    const annasCard = await tabsPage.findCardByName("Anna");
+    await annasCard.setGuest(true);
+
+    // Verify that Robert absorbed Anna's costs
+    const robertsCard = await tabsPage.findCardByName("Robert");
+    expect(await robertsCard.getValueFor("Sub-Total")).toEqual("25,000.00");
+    expect(await robertsCard.getValueFor("Fee")).toEqual("20,000.00");
+    expect(await robertsCard.getValueFor("Total")).toEqual("45,000.00");
+
+    await expect(tabsPage.total).toHaveText("45,000.00");
+
+    // Add thrid person (Ralph)
+    await tabsPage.addPerson("Ralph");
+    const ralphsCard = await tabsPage.findCardByName("Ralph");
+
+    // Verify that costs are recalculated correctly
+    expect(await robertsCard.getValueFor("Sub-Total")).toEqual("25,000.00");
+    expect(await robertsCard.getValueFor("Fee")).toEqual("10,000.00");
+    expect(await robertsCard.getValueFor("Total")).toEqual("35,000.00");
+
+    expect(await ralphsCard.getValueFor("Sub-Total")).toEqual("0.00");
+    expect(await ralphsCard.getValueFor("Fee")).toEqual("10,000.00");
+    expect(await ralphsCard.getValueFor("Total")).toEqual("10,000.00");
+
+    await expect(tabsPage.total).toHaveText("45,000.00");
+  });
 });
