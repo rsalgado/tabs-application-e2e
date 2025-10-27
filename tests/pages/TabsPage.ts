@@ -23,36 +23,34 @@ export class TabsPage {
     return new ItemsSectionFragment(this.page, this.itemsSection);
   }
 
-  // TODO: Refactor code use either person or card terminology consistently
-
-  async selectPerson(name: string) {
+  async selectCard(name: string) {
     const personCard = await this.findCardByName(name);
     await personCard.select();
   }
 
-  async addPerson(name: string) {
-    await this.newPersonForm.getByRole('textbox').fill(name);
+  async addCard(personName: string) {
+    await this.newPersonForm.getByRole('textbox').fill(personName);
     await this.newPersonForm.getByRole('button').click();
-    await this.findCardByName(name);
+    await this.findCardByName(personName);
     await this.page.waitForTimeout(500); // Wait for animations to complete
   }
 
-  async removePerson(name: string) {
-    const personCard = await this.findCardByName(name);
+  async removeCardByName(personName: string) {
+    const personCard = await this.findCardByName(personName);
     await personCard.close();
   }
 
-  async removePersonByIndex(cardIndex: number) {
+  async removeCardByIndex(cardIndex: number) {
     const personCard = await this.findCardByIndex(cardIndex);
     await personCard.close();
   }
 
-  async updatePersonName(oldName: string, newName: string) {
+  async updateCardName(oldName: string, newName: string) {
     const personCard = await this.findCardByName(oldName);
     await personCard.setName(newName);
   }
 
-  async updatePersonNameByIndex(cardIndex: number, newName: string) {
+  async updateCardNameByIndex(cardIndex: number, newName: string) {
     const personCard = await this.findCardByIndex(cardIndex);
     await personCard.setName(newName);
   }
@@ -88,14 +86,15 @@ export class TabsPage {
   }
 
   async removeAllCards() {
+    // Get all card IDs first to avoid locator issues while removing cards one by one due to indices shifting
     const cards = await this.personCards.all();
+    const cardIds = await Promise.all(
+      cards.map(c => c.getAttribute('data-testid') as unknown as string)
+    );
 
-    for (let card of cards) {
-      const cardFragment = new CardFragment(this.page, card);
-      await cardFragment.close();
+    for (let cardId of cardIds) {
+      let card =  await this.findCardById(cardId) as CardFragment;
+      await card.close();
     }
-
-    await expect(this.personCards).toHaveCount(0);
-    await this.page.waitForTimeout(500); // Wait animations to complete
   }
 }

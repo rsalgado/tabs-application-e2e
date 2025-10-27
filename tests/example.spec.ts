@@ -22,12 +22,12 @@ test('get started link', async ({ page }) => {
 test('opening the Dinner Tabs Application', async ({page}) => {
   await page.goto(`file://${APP_FILE_PATH}`);
   const tabsPage = new TabsPage(page);
-  await tabsPage.selectPerson("Jesus");
-  await tabsPage.addPerson("Joe");
+  await tabsPage.selectCard("Jesus");
+  await tabsPage.addCard("Joe");
   await expect(tabsPage.personCards).toHaveCount(6);
-  await tabsPage.removePerson('Mary');
+  await tabsPage.removeCardByName('Mary');
   await expect(tabsPage.personCards).toHaveCount(5);
-  await tabsPage.updatePersonName('David', 'Dave');
+  await tabsPage.updateCardName('David', 'Dave');
 
   const angiesTab = await tabsPage.findCardByName('Angie');
   expect(await angiesTab.getValueFor('Total')).toEqual('7,625.00');

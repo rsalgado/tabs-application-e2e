@@ -15,7 +15,7 @@ test.describe("General Site", () => {
 
   test("The main sections are visible correctly", async ({page}) => {
     const tabsPage = new TabsPage(page);
-    await tabsPage.selectPerson("David");
+    await tabsPage.selectCard("David");
     
     await expect(tabsPage.newPersonForm).toBeVisible();
     await expect(tabsPage.peopleSection).toBeVisible();
@@ -41,7 +41,7 @@ test.describe("Cards functionality", () => {
     const personName = "Chris";
     const tabsPage = new TabsPage(page);
     await expect(tabsPage.personCards).toHaveCount(5);
-    await tabsPage.addPerson(personName);
+    await tabsPage.addCard(personName);
     await expect(tabsPage.personCards).toHaveCount(6);
     
     const card = await tabsPage.findCardByIndex(5);
@@ -67,7 +67,7 @@ test.describe("Cards functionality", () => {
     await expect(card.nameInput).toHaveValue("Jesus");
     await card.setName("Joshua");
     await expect(card.nameInput).toHaveValue("Joshua");
-    await tabsPage.selectPerson("Joshua");
+    await tabsPage.selectCard("Joshua");
   });
 
   test("All cards can be removed and the total gets updated correctly", async ({page}) => {
@@ -83,7 +83,7 @@ test.describe("Cards functionality", () => {
 test.describe("Items functionality", () => {
   test("An item can be created", async ({page}) => {
     const tabsPage = new TabsPage(page);
-    await tabsPage.selectPerson("Angie");
+    await tabsPage.selectCard("Angie");
     
     const itemsSection = tabsPage.itemsSectionFragment
     expect(await itemsSection.getItemsCount()).toEqual(2);
@@ -97,7 +97,7 @@ test.describe("Items functionality", () => {
 
   test("An item can be removed", async ({page}) => {
     const tabsPage = new TabsPage(page);
-    await tabsPage.selectPerson("Angie");
+    await tabsPage.selectCard("Angie");
 
     const itemsSection = tabsPage.itemsSectionFragment;
     expect(await itemsSection.getItemsCount()).toEqual(2);
@@ -111,7 +111,7 @@ test.describe("Items functionality", () => {
 
   test("An item can updated", async({page}) => {
     const tabsPage = new TabsPage(page);
-    await tabsPage.selectPerson("Angie");
+    await tabsPage.selectCard("Angie");
 
     const itemsSection = tabsPage.itemsSectionFragment;
     const originalFirstRow = await itemsSection.getItemByIndex(0);
@@ -139,7 +139,7 @@ test.describe("Guest functionality", () => {
     const tabsPage = new TabsPage(page);
     await tabsPage.removeAllCards();
 
-    await tabsPage.addPerson("Anna");
+    await tabsPage.addCard("Anna");
     const card = await tabsPage.findCardByName("Anna");
     expect(card.isDetailsRowVisible("Sub-Total")).resolves.toBe(true);
     expect(card.isDetailsRowVisible("Fee")).resolves.toBe(true);
@@ -278,7 +278,7 @@ test.describe("Guest functionality", () => {
     await expect(tabsPage.total).toHaveText("45,000.00");
 
     // Add thrid person (Ralph)
-    await tabsPage.addPerson("Ralph");
+    await tabsPage.addCard("Ralph");
     const ralphsCard = await tabsPage.findCardByName("Ralph");
 
     // Verify that costs are recalculated correctly

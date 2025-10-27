@@ -69,6 +69,10 @@ export class CardFragment {
 
   async close() {
     await this.closeButton.click();
+    // NOTE: We use element handles here because the locator of the card might match cards
+    // by index and after closing one card, the indices would shift causing flaky waits.
+    let handle = await this.card.elementHandle();
+    await handle?.waitForElementState('hidden');
   }
 
   async getPersonId() {
