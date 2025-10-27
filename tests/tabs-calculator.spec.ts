@@ -292,4 +292,40 @@ test.describe("Guest functionality", () => {
 
     await expect(tabsPage.total).toHaveText("45,000.00");
   });
+
+  test("Removing a guest recalculates the costs correctly", async ({page}) => {
+    const tabsPage = new TabsPage(page);
+    await tabsPage.removeAllCards();
+
+    // Add first person (Olivia)
+    await helpers.createCardWithItems(tabsPage, "Olivia", [
+      {name: "Smoothie", value: 14_000},
+      {name: "Pasta", value: 36_000}
+    ]);
+
+    // Add second person (Liam)
+    await helpers.createCardWithItems(tabsPage, "Liam", [
+      {name: "Soda", value: 6_000},
+      {name: "Burger", value: 24_000}
+    ]);
+
+    const oliviasCard =  await tabsPage.findCardByName("Olivia");
+    const liamsCard =  await tabsPage.findCardByName("Liam");
+    // Verify initial costs for Liam
+    expect(await liamsCard.getValueFor("Fee")).toEqual("0.00");
+    expect(await liamsCard.getValueFor("Total")).toEqual("30,000.00");
+    await expect(tabsPage.total).toHaveText("80,000.00");
+
+    // Set Olivia as guest and verify Liam's costs are updated to absorb Olivia's costs
+    await oliviasCard.setGuest(true);
+    expect(await liamsCard.getValueFor("Fee")).toEqual("50,000.00");
+    expect(await liamsCard.getValueFor("Total")).toEqual("80,000.00");
+    await expect(tabsPage.total).toHaveText("80,000.00");
+    // Remove Olivia
+    await oliviasCard.close();
+    // Verify that Liam's costs are back to normal
+    expect(await liamsCard.getValueFor("Fee")).toEqual("0.00");
+    expect(await liamsCard.getValueFor("Total")).toEqual("30,000.00");
+    await expect(tabsPage.total).toHaveText("30,000.00");
+  });
 });
