@@ -62,11 +62,6 @@ export class CardFragment {
     await this.nameInput.press('Enter');
   }
 
-  async toggleGuestCheckbox(value: boolean) {
-    if (value)  await this.guestCheckbox.check();
-    else        await this.guestCheckbox.uncheck();
-  }
-
   async close() {
     await this.closeButton.click();
     // NOTE: We use element handles here because the locator of the card might match cards
@@ -75,7 +70,7 @@ export class CardFragment {
     await handle?.waitForElementState('hidden');
   }
 
-  async getPersonId() {
+  async getCardId() {
     return await this.card.getAttribute('data-testid') as string;
   }
 }

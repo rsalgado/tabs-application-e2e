@@ -51,7 +51,7 @@ test.describe("Cards functionality", () => {
   test("A person can be removed", async ({page}) => {
     const tabsPage = new TabsPage(page);
     let card: CardFragment | null = await tabsPage.findCardByIndex(2);
-    const personId = await card.getPersonId();
+    const personId = await card.getCardId();
 
     await expect(tabsPage.personCards).toHaveCount(5);
     await card.close();
