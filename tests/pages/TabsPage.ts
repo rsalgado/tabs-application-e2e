@@ -61,7 +61,8 @@ export class TabsPage {
     for (let card of await this.personCards.all()) {
       let title = await card.locator('.person-header .name').inputValue();
       if (title === name) {
-        cardLocator = card;
+        let cardId = await card.getAttribute('data-testid') as unknown as string;
+        cardLocator = this.peopleSection.getByTestId(cardId);
         break;
       }
     }
