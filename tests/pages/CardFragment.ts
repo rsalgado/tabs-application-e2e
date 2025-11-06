@@ -41,13 +41,13 @@ export class CardFragment {
     return value ?? '';
   }
 
-  async isDetailsRowVisible(rowName: string) {
+  async isDetailsRowVisible(rowName: string): Promise<boolean> {
     const regExp = new RegExp(`^${rowName}\:`, 'i');
     const row = this.detailsRows.filter({ hasText: regExp});
     return await row.isVisible();
   }
 
-  async isGuest() {
+  async isGuest(): Promise<boolean> {
     return this.guestCheckbox.isChecked();
   }
 
@@ -63,14 +63,14 @@ export class CardFragment {
   }
 
   async close() {
-    await this.closeButton.click();
     // NOTE: We use element handles here because the locator of the card might match cards
     // by index and after closing one card, the indices would shift causing flaky waits.
     let handle = await this.card.elementHandle();
+    await this.closeButton.click();
     await handle?.waitForElementState('hidden');
   }
 
-  async getCardId() {
+  async getCardId(): Promise<string> {
     return await this.card.getAttribute('data-testid') as string;
   }
 }

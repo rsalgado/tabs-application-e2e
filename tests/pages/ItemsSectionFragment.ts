@@ -1,5 +1,11 @@
 import { Page, Locator } from '@playwright/test';
 
+interface Item {
+  id: string;
+  name: string;
+  value: string;
+}
+
 export class ItemsSectionFragment {
   readonly page: Page;
   readonly itemsSection: Locator;
@@ -31,21 +37,22 @@ export class ItemsSectionFragment {
     await this.newItemForm.getByRole('button').click();
   }
 
-  async getItemById(rowId: string): Promise<{name: string, value: string}> {
+  async getItemById(rowId: string): Promise<Item> {
     const itemRow = this.itemsRows.getByTestId(rowId);
     const name = await itemRow.locator('.name').inputValue();
     const value = await itemRow.locator('.value').inputValue();
-    return { name, value };
+    return {id: rowId, name, value };
   }
 
-  async getItemByIndex(rowIndex: number): Promise<{name: string, value: string}> {
+  async getItemByIndex(rowIndex: number): Promise<Item> {
     const itemRow = this.itemsRows.locator('.item-row').nth(rowIndex);
+    const id = await itemRow.getAttribute('data-testid') as string;
     const name = await itemRow.locator('.name').inputValue();
     const value = await itemRow.locator('.value').inputValue();
-    return { name, value };
+    return { id, name, value };
   }
 
-  async getItems() {
+  async getItems(): Promise<Item[]> {
     let itemsData: {id: string, name: string, value: string}[] = [];
 
     for (let itemLocator of await this.itemsRows.locator('.item-row[data-testid]').all()) {
